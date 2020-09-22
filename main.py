@@ -112,7 +112,7 @@ if (len(fNameExt)>1 and (fNameExt[1]=='mp4')):
     partFileFolder = "partitioned_files["+fNameExt[0]+"]"
     os.mkdir((mainDir+"/"+partFileFolder))
     #a command to spit the file into pieces
-    cmd = 'ffmpeg -i \"'+mainDir+'\\'+inputFileName+'\" -c copy -map 0 -segment_time 00:05:00 -f segment \"'+mainDir+'\\'+partFileFolder+'\output%03d.mp4\"'
+    cmd = 'ffmpeg -i \"'+mainDir+'/'+inputFileName+'\" -c copy -map 0 -segment_time 00:05:00 -f segment \"'+mainDir+'/'+partFileFolder+'/output%03d.mp4\"'
     os.system(cmd)
 
     #trim the partitioned files
