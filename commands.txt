@@ -1,0 +1,36 @@
+
+python trim_video.py --input_file "2020_a_world_on_fire.mp4" --output_file "2020_a_world_on_fire_(trimmed).mp4"
+python ..\trim_video.py --input_file "input-2.mp4" --output_file "input-2(trimmed).mp4"
+
+first attempt stared @ 4:58
+first part done at 7:55
+
+ffmpeg -i input.mp4 -c:v libx264 -crf 22 -map 0 -segment_time 600 -reset_timestamps 1 -g 18000 -sc_threshold 0 -force_key_frames “expr:gte(t,n_forced*N)” -f segment output%03d.mp4
+
+
+a shell script that splits a video into fragments of a certain length
+    splitvideo.sh input.mp4 25000000 "-c:v libx264 -crf 23 -c:a copy -vf scale=960:-1"
+    ..\..\splitvideo.sh ..\output.mp4 2500000 "-c:v libx264 -crf 23 -c:a copy -vf scale=960:-1"
+
+
+python ..\trim_video.py --input_file "input-1.mp4" --output_file "input-1(trimmed).mp4"
+
+to combine a list of mp4s
+
+    ffmpeg -f concat -i input.txt -codec copy output.mp4
+contents of input.txt
+    file 'C:\Users\fabio\Downloads\Super\Sharks\01.mp4'
+    file 'C:\Users\fabio\Downloads\Super\Sharks\02.mp4'
+    file 'C:\Users\fabio\Downloads\Super\Sharks\03.mp4'
+
+    ffmpeg -ss 00:30:00.0 -i "Building the revolutionary party.mp4" -c copy -t 00:40:00.0 input.mp4
+
+creating an executable
+
+to create the executable (inside the Builds folder to keep things clean)
+-F tells pyinstaller to put it all into one EXE
+-i flag is for adding an icon to my program.
+    pyinstaller -F ..\main.py ..\trim_video.py
+
+If you don't want pyinstaller to overwrite spec file use this command
+    pyinstaller main.spec 

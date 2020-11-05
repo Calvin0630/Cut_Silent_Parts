@@ -84,9 +84,11 @@ import os
 import subprocess
 import shutil
 Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing
+print('os.getcwd() '+str(os.getcwd()))
+homeDir = os.getcwd()
 input("press enter to select a file to remove silent bits.")
 filename = askopenfilename() # show an "Open" dialog box and return the path to the selected file
-print(filename)
+print("input: "+filename)
 
 
 inputFilePath = filename.rsplit('/',1)[0]
@@ -98,7 +100,7 @@ print('inputFileName: '+inputFileName)
 
 #the main project dir
 mainDir = inputFilePath
-print("mainDir: "+mainDir)
+print("changing directory to inputFilePath.")
 os.chdir(mainDir)
 
 
@@ -110,30 +112,38 @@ if (len(fNameExt)>1 and (fNameExt[1]=='mp4')):
     print("inputFileName: "+inputFileName)
     #partition the mp4 into segments of 15 min
     partFileFolder = "partitioned_files["+fNameExt[0]+"]"
+    print('making a directory for partitioned files')
     os.mkdir((mainDir+"/"+partFileFolder))
-    #a command to spit the file into pieces
+    #a command to split the file into pieces
     cmd = 'ffmpeg -i \"'+mainDir+'/'+inputFileName+'\" -c copy -map 0 -segment_time 00:05:00 -f segment \"'+mainDir+'/'+partFileFolder+'/output%03d.mp4\"'
+    print('partitioning files')
     os.system(cmd)
-
+    print('done partitioning.')
+    #input("press a enter to continue")
     #trim the partitioned files
     trimmedFolder = "trimmed_files["+fNameExt[0]+"]"
     os.mkdir(mainDir+"/"+trimmedFolder)
     partFileList = os.listdir(partFileFolder)
+    print("the list of partitioned files is: " + ', '.join(partFileList))
     for partFile in partFileList:
         #start by checking if there is a temp folder in partFileFolder
-        try:
-            shutil.rmtree("TEMP")
-        except OSError as e:
-            print("Error: %s : %s" % ("TEMP", e.strerror))
+        if (os.path.exists('TEMP')):
+            try:
+                shutil.rmtree("TEMP")
+            except OSError as e:
+                print("Error: %s : %s" % ("TEMP", e.strerror))
+        
         inputFilePath = partFileFolder+"/"+partFile
-        #print("input file: "+inputFilePath)
+        print("input file: "+inputFilePath)
         outputFilePath = trimmedFolder+'/'+partFile
-        #print("output file: "+outputFilePath)
+        print("output file: "+outputFilePath)
         #a command to trim the silent bits from the segmented mp4 files and save the results in a folder outputFilePath
-        cmd = "python trim_video.py --input_file \""+inputFilePath+"\" --output_file \""+outputFilePath+"\""
-        #print("command:")
-        #print(cmd)
+        cmd = "python "+homeDir+"\\trim_video.py --input_file \""+inputFilePath+"\" --output_file \""+outputFilePath+"\""
+        print("command:")
+        print(cmd)
+        #input('about to execute trim_video.py. press enter to continue.')
         os.system(cmd)
+    print("done trimming. time to recombine the trimmed videos.")
     #now combine the trimmed parts into one big file
     trimmedFiles = os.listdir(trimmedFolder)
     #print(trimmedFiles)
